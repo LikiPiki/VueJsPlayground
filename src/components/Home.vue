@@ -3,8 +3,8 @@
 		<h1>Your posts here</h1>
 		<br>
 	<div class="container">
-		<div v-if="posts.length > 0">
-			<md-card v-for="post in posts" class="content">
+		<div v-if="allPosts.length > 0">
+			<md-card v-for="post in allPosts" class="content">
 		        <md-card-header>
 		        <md-avatar class="avatar">
 		          <img src="https://pbs.twimg.com/profile_images/719228251168731137/61EfguCm.jpg" alt="Avatar">
@@ -32,13 +32,13 @@
 		      </md-card-actions>
 		    </md-card>
 			</div>
-			<div v-else>
+ 			<div v-else>
 				<h1>Failed load posts</h1>
  				<md-button class="md-fab" @click="refreshPosts">
         		<md-icon>cached</md-icon>
       			</md-button>
 			</div>
-		</div>
+ 		</div>
 	</div>
 </template>
 
@@ -48,44 +48,18 @@
 		name: 'Home',
 		data() {
 			return {
-				posts: [],
 			}
 		},
 		computed: {
-			downloadPosts: function() {
+			allPosts() {
+				console.log('this is here', this.$store.posts);
+				return this.$store.state.posts
 			}
 		},
 		methods: {
 			refreshPosts: function() {
-				this.$http.get('https://jsonplaceholder.typicode.com/posts').then(response => {
-				console.log(response.body);
-				console.log(typeof(response.body));
-				console.log(response.body.length);
-				response.body.map(el => {
-					el['image'] = 'https://placeimg.com/640/300'
-					el['creator'] = 'LikiPiki'
-					el['isAdmin'] = true
-					this.posts.push(el)
-				});
-			}, response => {
-				console.log('Error loading json');
-			})
+				this.$store.dispatch('getPosts')
 			}
-		},
-		beforeCreate: function() {
-			this.$http.get('https://jsonplaceholder.typicode.com/postskek').then(response => {
-				console.log(response.body);
-				console.log(typeof(response.body));
-				console.log(response.body.length);
-				response.body.map(el => {
-					el['image'] = 'https://placeimg.com/640/300'
-					el['creator'] = 'LikiPiki'
-					el['isAdmin'] = true
-					this.posts.push(el)
-				});
-			}, response => {
-				console.log('Error loading json');
-			})
 		},
 	}
 </script>

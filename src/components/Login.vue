@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<h1>Hello i am login like {{name}}</h1>
-		<form class="login-form">
+		<form class="login-form md-layout-row md-gutter">
 			  <md-field>
                 <label for="username">Username</label>
                 <md-input name="username" v-model="form.username"/>
@@ -29,10 +29,11 @@
 		},
 		methods: {
 			clicked: function (event) {
-				if (this.form.username == 'admin' && this.form.password == 'admin') {
 					console.log('Worked');
-					this.$store.commit('loginUser')
-				}
+					this.$store.commit('loginUser', {
+						username: this.form.username,
+						isAdmin: false,
+					})
 			}
 		}
 	}
