@@ -30,6 +30,7 @@
 		methods: {
 			clicked: function (event) {
 				if (this.form.username == 'admin' && this.form.password == 'admin') {
+					console.log('Worked');
 					this.$store.commit('loginUser')
 				}
 			}

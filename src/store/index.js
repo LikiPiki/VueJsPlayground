@@ -5,13 +5,13 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	state: {
-		login: true,
+		login: false,
 		user: {
 			username: "",
 			login: "",
 			image: "",
 			age: 0,
-		}
+		},
 	},
 	mutations: {
 		loginUser(state) {
