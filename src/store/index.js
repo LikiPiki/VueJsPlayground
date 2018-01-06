@@ -15,8 +15,9 @@ const store = new Vuex.Store({
 	mutations: {
 		loginUser(state, data) {
 			console.log('logggging user');
-			state.login = true
-			state.user = data
+			this.state.login = true
+			this.state.user = data
+			console.log(this.state);
 		},
 		logoutUser(state) {
 			state.login = false

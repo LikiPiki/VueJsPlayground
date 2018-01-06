@@ -36,8 +36,13 @@
 
 					this.$http.post('/login', data).then(response => {
 						console.log(response);
-						this.$store.commit('loginUser', response)
-						console.log('Logining');
+						console.log('KEK', response.body.success);
+						console.log(this.$store.state);
+						if (response.body.success) {
+							this.$store.commit('loginUser', response.body)
+							console.log('Logining');
+						}
+						console.log(this.$store.state);
 					}, response => {
 						console.log('Login error')
 					})
