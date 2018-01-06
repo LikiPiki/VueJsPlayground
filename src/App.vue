@@ -15,7 +15,10 @@ export default {
   components: {
     Menu,
   },
-  store
+  store,
+  created() {
+    this.$store.dispatch('getPosts')
+  }
 }
 </script>
 
