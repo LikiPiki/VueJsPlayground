@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/jinzhu/gorm"
@@ -28,6 +29,12 @@ func init() {
 
 func main() {
 	defer db.Close()
+
+	var users []User
+	db.Find(&users)
+	for _, el := range users {
+		fmt.Println("%#v", el)
+	}
 
 	var wg sync.WaitGroup
 	wg.Add(1)

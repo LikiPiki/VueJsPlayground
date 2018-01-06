@@ -28,10 +28,19 @@
 		},
 		methods: {
 			clicked: function (event) {
-				// register new user here
+				var data = {
+					username: this.form.username,
+					password: this.form.password,
+				}
+				console.log(data);
+				this.$http.post('/register', data).then(response => {
+					console.log("Success");
+				}, response => {
+					console.log('Error loading json register');
+				})
 			}
-		}
 	}
+}
 </script>
 
 <style>
