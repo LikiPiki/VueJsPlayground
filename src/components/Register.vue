@@ -34,6 +34,7 @@
 				}
 				console.log(data);
 				this.$http.post('/register', data).then(response => {
+					console.log(response);
 					console.log("Success");
 				}, response => {
 					console.log('Error loading json register');

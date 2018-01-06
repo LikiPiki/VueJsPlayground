@@ -20,6 +20,7 @@ func startWebRestApi() {
 	router := mux.NewRouter()
 
 	router.PathPrefix(STATIC_PATH).Handler(http.StripPrefix(STATIC_PATH, http.FileServer(http.Dir(DIR))))
+	router.HandleFunc("/login", loginHandler).Methods("Post")
 	router.HandleFunc("/register", registerHandler).Methods("Post")
 	router.HandleFunc("/", homeHandler).Methods("Get")
 	http.Handle("/", router)
@@ -30,6 +31,36 @@ func startWebRestApi() {
 	if err != nil {
 		panic("Error start web server")
 	}
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	var data map[string]interface{}
+	var err error
+	var bytes []byte
+	err = json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		log.Println("Error parse response body")
+	}
+	var user User
+	if !db.Where(
+		"username = ? and password = ?",
+		data["username"].(string),
+		data["password"].(string),
+	).First(&user).RecordNotFound() {
+		bytes, err = json.Marshal(&map[string]interface{}{
+			"success":  true,
+			"username": user.Username,
+			"isAdmin":  user.IsAdmin,
+		})
+	} else {
+		bytes, err = json.Marshal(&map[string]interface{}{
+			"success": false,
+		})
+	}
+	if err != nil {
+		log.Println("Cant json return value: ", err)
+	}
+	w.Write(bytes)
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +85,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	} else {
 		bytes, err = json.Marshal(&map[string]interface{}{
-			"error": "Please choose different username!",
+			"success": false,
 		})
 
 	}

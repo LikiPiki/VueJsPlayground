@@ -29,7 +29,18 @@
 		},
 		methods: {
 			clicked: function (event) {
-					console.log('Worked');
+					let data = {
+						username: this.form.username,
+						password: this.form.password,
+					}
+
+					this.$http.post('/login', data).then(response => {
+						console.log('success login');
+						console.log(response);
+					}, response => {
+						console.log('Login error')
+					})
+
 					this.$store.commit('loginUser', {
 						username: this.form.username,
 						isAdmin: false,

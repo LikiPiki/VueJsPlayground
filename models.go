@@ -7,7 +7,8 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string
-	Password string
-	IsAdmin  bool
+	Username  string
+	Password  string
+	IsAdmin   bool
+	ImagePath string
 }
