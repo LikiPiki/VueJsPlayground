@@ -18,7 +18,7 @@
 				<md-field>
 					<label for="title">Title</label>
 					<md-input name="title" v-model="form.title" required/>
-					</md-field>
+				</md-field>
 				<md-field>
 					<label for="content">Content</label>
 					<md-input type='textarea' name="content" v-model="form.content" required/>

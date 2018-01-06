@@ -35,15 +35,11 @@
 					}
 
 					this.$http.post('/login', data).then(response => {
-						console.log('success login');
 						console.log(response);
+						this.$store.commit('loginUser', response)
+						console.log('Logining');
 					}, response => {
 						console.log('Login error')
-					})
-
-					this.$store.commit('loginUser', {
-						username: this.form.username,
-						isAdmin: false,
 					})
 			}
 		}

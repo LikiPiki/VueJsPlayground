@@ -9,16 +9,14 @@ const store = new Vuex.Store({
 		user: {
 			username: "",
 			isAdmin: false,
-			image: "",
-			age: 0,
 		},
 		posts: []
 	},
 	mutations: {
 		loginUser(state, data) {
+			console.log('logggging user');
 			state.login = true
-			state.user.username = data.username,
-			state.user.isAdmin = data.isAdmin
+			state.user = data
 		},
 		logoutUser(state) {
 			state.login = false
@@ -28,7 +26,7 @@ const store = new Vuex.Store({
 		},
 		save(state, query) {
 			this.state.posts.unshift(query)
-		}
+		},
 	},
 	actions: {
 		getPosts({commit}) {
@@ -49,7 +47,7 @@ const store = new Vuex.Store({
 		},
 		savePost({commit}, query) {
 			commit('save', query);
-		}
+		},
 	},
 })
 

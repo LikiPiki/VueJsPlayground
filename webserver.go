@@ -48,9 +48,10 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		data["password"].(string),
 	).First(&user).RecordNotFound() {
 		bytes, err = json.Marshal(&map[string]interface{}{
-			"success":  true,
-			"username": user.Username,
-			"isAdmin":  user.IsAdmin,
+			"success":   true,
+			"username":  user.Username,
+			"isAdmin":   user.IsAdmin,
+			"userImage": "",
 		})
 	} else {
 		bytes, err = json.Marshal(&map[string]interface{}{
