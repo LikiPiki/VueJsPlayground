@@ -21,6 +21,7 @@ func init() {
 
 	db.AutoMigrate(
 		&User{},
+		&Post{},
 	)
 
 	db.LogMode(true)

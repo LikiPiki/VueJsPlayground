@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	state: {
-		login: false,
+		login: true,
 		user: {
 			username: "",
 			isAdmin: false,
@@ -32,10 +32,8 @@ const store = new Vuex.Store({
 	actions: {
 		getPosts({commit}) {
 			const url = 'https://jsonplaceholder.typicode.com/posts'
+			// change response to new
 			Vue.http.get(url).then(response => {
-				console.log('FROM VUEX');
-				console.log(response.body);
-				console.log('FROM VUEX');
 				response.body.map(el => {
 					el['image'] = 'https://placeimg.com/640/300'
 					el['creator'] = 'LikiPiki'

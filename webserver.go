@@ -20,8 +20,12 @@ func startWebRestApi() {
 	router := mux.NewRouter()
 
 	router.PathPrefix(STATIC_PATH).Handler(http.StripPrefix(STATIC_PATH, http.FileServer(http.Dir(DIR))))
+
+	router.HandleFunc("/add_post", addNewPost).Methods("Post")
 	router.HandleFunc("/login", loginHandler).Methods("Post")
 	router.HandleFunc("/register", registerHandler).Methods("Post")
+
+	router.HandleFunc("/get_posts", getPosts).Methods("Get")
 	router.HandleFunc("/", homeHandler).Methods("Get")
 	http.Handle("/", router)
 	fmt.Println(
@@ -31,6 +35,67 @@ func startWebRestApi() {
 	if err != nil {
 		panic("Error start web server")
 	}
+}
+
+func getPosts(w http.ResponseWriter, r *http.Request) {
+	var posts, newPosts []Post
+	// var post Post
+
+	db.Find(&posts)
+
+	for _, el := range posts {
+		db.Model(&el).Related(&el.User)
+		newPosts = append(newPosts, el)
+	}
+	data, err := json.MarshalIndent(&newPosts, "", "\t")
+	if err != nil {
+		log.Println(err)
+	}
+	w.Write(data)
+}
+
+// change this func
+func addNewPost(w http.ResponseWriter, r *http.Request) {
+	type Body struct {
+		Username  string
+		IsAdmin   bool
+		imageLink string
+		Title     string
+		Content   string
+		ImageLink string
+	}
+	var data Body
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		log.Println(err)
+		errorJson := generateErrorJson(err)
+		w.Write(errorJson)
+		return
+	} else {
+		var user User
+		if db.Where("username = ?", data.Username).First(&user).RecordNotFound() {
+			fmt.Println("not here")
+			errorJson := generateErrorJson("Not found user")
+			w.Write(errorJson)
+		} else {
+			fmt.Println("HERE")
+			db.Create(&Post{
+				User:      user,
+				Title:     data.Title,
+				Content:   data.Content,
+				ImageLink: data.ImageLink,
+			})
+		}
+
+		resp, err := json.Marshal(&map[string]interface{}{
+			"success": true,
+		})
+		if err != nil {
+			log.Println(err)
+		}
+		w.Write(resp)
+	}
+	fmt.Println(data)
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -102,4 +167,16 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error parse file index.html")
 	}
 	temp.ExecuteTemplate(w, "index.html", nil)
+}
+
+// functions
+func generateErrorJson(text interface{}) []byte {
+	data, err := json.Marshal(&map[string]interface{}{
+		"success": false,
+		"message": text,
+	})
+	if err != nil {
+		log.Println("Error generateErrorJson", err)
+	}
+	return data
 }

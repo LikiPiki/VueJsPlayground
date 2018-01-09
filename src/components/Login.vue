@@ -39,6 +39,7 @@
 						console.log('KEK', response.body.success);
 						console.log(this.$store.state);
 						if (response.body.success) {
+							delete response.body.success
 							this.$store.commit('loginUser', response.body)
 							console.log('Logining');
 						}

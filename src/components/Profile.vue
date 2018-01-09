@@ -54,13 +54,28 @@
 		},
 		methods: {
 			savePost: function() {
-				console.log(this.form);
 				this.$store.dispatch('savePost', {
 					creator: this.$store.state.user.username,
 					image: this.form.imagelink,
 					body: this.form.content,
 					title: this.form.title
 				})
+				if (this.$store.state.user) {
+					let data = {
+						...this.$store.state.user,
+						...this.form,
+					}
+					console.log('data is ', data)
+					this.$http.post('/add_post', data).then(response => {
+						console.log("SUCCESS");
+						console.log(response.body);
+					}, response => {
+						console.log('Error');
+						console.log(response.body);
+					})
+				} else {
+					console.log("NOT");
+				}
 			}
 		},
 	}
