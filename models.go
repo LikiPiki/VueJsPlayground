@@ -8,18 +8,18 @@ import (
 
 type User struct {
 	gorm.Model
-	Username  string
+	Username  string `json:"username"`
 	Password  string `json:"-"`
-	IsAdmin   bool
-	ImagePath string
+	IsAdmin   bool   `json:"isAdmin"`
+	ImagePath string `json:"imagePath"`
 }
 
 type Post struct {
 	gorm.Model
-	Title       string
-	Content     string
-	ImageLink   string
-	PublishTime time.Time
-	UserID      int
-	User        User
+	Title       string    `json:"title"`
+	Content     string    `json:"content"`
+	ImageLink   string    `json:"imageLink"`
+	PublishTime time.Time `json:"publishTime"`
+	UserID      int       `json:"user_id"`
+	User        User      `json:"user"`
 }

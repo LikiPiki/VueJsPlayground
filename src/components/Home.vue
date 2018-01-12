@@ -11,23 +11,22 @@
 		        </md-avatar>
 
 				<div class="info">
-			        <div class="md-title">{{post.creator}}</div>
-			        <div class="md-subhead">{{post.isAdmin ? 'Admin': 'User'}}</div>
+			        <div class="md-title">{{post.user.username}}</div>
+			        <div class="md-subhead">{{post.user.isAdmin ? 'Admin': 'User'}}</div>
 			    </div>
 		      </md-card-header>
 
 		      <md-card-media>
-		        <img :src="post.image" alt="People">
+		        <img :src="post.imageLink" alt="People">
 		      </md-card-media>
 
 		      <md-card-content>
 		      	<h3>{{post.title}}</h3>
 		      	<br>
-		        {{post.body}}
+		        {{post.content}}
 		      </md-card-content>
 
 		      <md-card-actions>
-		        <md-button>Save</md-button>
 		        <md-button>Read</md-button>
 		      </md-card-actions>
 		    </md-card>

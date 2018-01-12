@@ -1,0 +1,19 @@
+bar:
+  cmds:
+    - go build
+    - npm run build
+    - ./VueJsPlayground
+
+build:
+  cmds:
+    - go build
+
+br:
+  cmds:
+    - go build
+    - ./VueJsPlayground
+
+bf:
+  cmds:
+    - npm run build
+

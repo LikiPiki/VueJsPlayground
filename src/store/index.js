@@ -31,15 +31,13 @@ const store = new Vuex.Store({
 	},
 	actions: {
 		getPosts({commit}) {
-			const url = 'https://jsonplaceholder.typicode.com/posts'
+			const url = '/get_posts'
 			// change response to new
 			Vue.http.get(url).then(response => {
-				response.body.map(el => {
-					el['image'] = 'https://placeimg.com/640/300'
-					el['creator'] = 'LikiPiki'
-					el['isAdmin'] = true
-			});
-				commit('set', {type: 'posts', data: response.body})
+			console.log('Something here')
+			console.log(response.body)
+			console.log('Something here')
+			commit('set', {type: 'posts', data: response.body})
 			}, response => {
 				console.log('Error loading json VUEX');
 			})

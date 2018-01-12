@@ -68,17 +68,15 @@ func addNewPost(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		log.Println(err)
-		errorJson := generateErrorJson(err)
-		w.Write(errorJson)
 		return
 	} else {
 		var user User
 		if db.Where("username = ?", data.Username).First(&user).RecordNotFound() {
-			fmt.Println("not here")
-			errorJson := generateErrorJson("Not found user")
-			w.Write(errorJson)
+			log.Println(err)
+			return
 		} else {
 			fmt.Println("HERE")
+
 			db.Create(&Post{
 				User:      user,
 				Title:     data.Title,
@@ -90,6 +88,7 @@ func addNewPost(w http.ResponseWriter, r *http.Request) {
 		resp, err := json.Marshal(&map[string]interface{}{
 			"success": true,
 		})
+
 		if err != nil {
 			log.Println(err)
 		}
@@ -167,16 +166,4 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error parse file index.html")
 	}
 	temp.ExecuteTemplate(w, "index.html", nil)
-}
-
-// functions
-func generateErrorJson(text interface{}) []byte {
-	data, err := json.Marshal(&map[string]interface{}{
-		"success": false,
-		"message": text,
-	})
-	if err != nil {
-		log.Println("Error generateErrorJson", err)
-	}
-	return data
 }
