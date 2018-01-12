@@ -4,7 +4,7 @@
 		<br>
 	<div class="container">
 		<div v-if="allPosts.length > 0">
-			<md-card v-for="(post, index) in allPosts" :key="index" class="content">
+			<md-card v-for="post in allPosts" :key="post.ID" class="content">
 		        <md-card-header>
 		        <md-avatar class="avatar">
 		          <img src="https://pbs.twimg.com/profile_images/719228251168731137/61EfguCm.jpg" alt="Avatar">
