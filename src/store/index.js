@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	state: {
-		login: true,
+		login: false,
 		user: {
 			username: "",
 			isAdmin: false,
@@ -32,7 +32,7 @@ const store = new Vuex.Store({
 	actions: {
 		getPosts({commit}) {
 			const url = '/get_posts'
-			// change response to new
+
 			Vue.http.get(url).then(response => {
 			console.log('Something here')
 			console.log(response.body)

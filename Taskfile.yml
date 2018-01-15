@@ -1,7 +1,9 @@
+start:
+  deps: [install, bf]
+
 bar:
+  deps: [build, bf]
   cmds:
-    - go build
-    - npm run build
     - ./VueJsPlayground
 
 build:
@@ -16,4 +18,8 @@ br:
 bf:
   cmds:
     - npm run build
+    - mkdir ./dist/static/media/
 
+install:
+  cmds:
+    - npm install

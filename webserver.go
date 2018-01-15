@@ -8,12 +8,17 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+  "strings"
+  "encoding/base64"
+  "os"
 )
 
 const (
 	PORT        = ":8000"
 	STATIC_PATH = "/static/"
+	STATIC_FOR_MEDIA ="/static"
 	DIR         = "./dist/static"
+	MEDIA_FOLDER = "/media/"
 )
 
 func startWebRestApi() {
@@ -21,7 +26,9 @@ func startWebRestApi() {
 
 	router.PathPrefix(STATIC_PATH).Handler(http.StripPrefix(STATIC_PATH, http.FileServer(http.Dir(DIR))))
 
+	router.HandleFunc("/get_user/{username}", getUser).Methods("Get")
 	router.HandleFunc("/add_post", addNewPost).Methods("Post")
+	router.HandleFunc("/load_profile_image", loadProfileImage).Methods("Post")
 	router.HandleFunc("/login", loginHandler).Methods("Post")
 	router.HandleFunc("/register", registerHandler).Methods("Post")
 
@@ -35,6 +42,59 @@ func startWebRestApi() {
 	if err != nil {
 		panic("Error start web server")
 	}
+}
+
+func getUser(w http.ResponseWriter, r *http.Request) {
+  vars := mux.Vars(r)
+  username := vars["username"]
+  var user User
+  if db.Where("username = ?", username).First(&user).RecordNotFound() {
+    // error here
+  } else {
+    bytes, err := json.MarshalIndent(&user, "", "\t")
+    if err != nil {
+      // error here
+    }
+    w.Write(bytes)
+  }
+}
+
+func loadProfileImage(w http.ResponseWriter, r *http.Request) {
+  //save image from query
+  type Body struct {
+    Username string `json:"username"`
+    ImageData string `json:"imageData"`
+    ImageName string `json:"imageName"`
+  }
+  var body Body
+  err := json.NewDecoder(r.Body).Decode(&body)
+  if err != nil {
+    // error here
+  }
+  fmt.Println("Username is ", body.Username)
+  content := strings.Split(body.ImageData, ",")
+  data, err := base64.StdEncoding.DecodeString(content[1])
+  if err != nil {
+    log.Println("Erorr decode base64 image")
+  }
+  if body.ImageData != "" && body.ImageName != "" {
+    f, err := os.Create(
+      fmt.Sprintf("%s%s%s", DIR, MEDIA_FOLDER,  body.ImageName),
+    )
+    if err != nil {
+      log.Println("error writing file")
+      // erorr here
+    }
+    f.Write(data)
+    f.Close()
+  }
+  var user User
+  if db.Where("username = ?", body.Username).First(&user).RecordNotFound() {
+    // error here
+  } else {
+    db.Model(&user).Update("imagePath", fmt.Sprintf("%s%s%s", STATIC_FOR_MEDIA, MEDIA_FOLDER,  body.ImageName))
+  }
+  // return something cool!!!
 }
 
 func getPosts(w http.ResponseWriter, r *http.Request) {
@@ -56,6 +116,7 @@ func getPosts(w http.ResponseWriter, r *http.Request) {
 
 // change this func
 func addNewPost(w http.ResponseWriter, r *http.Request) {
+
 	type Body struct {
 		Username  string
 		IsAdmin   bool
@@ -64,8 +125,10 @@ func addNewPost(w http.ResponseWriter, r *http.Request) {
 		Content   string
 		ImageLink string
 	}
+
 	var data Body
 	err := json.NewDecoder(r.Body).Decode(&data)
+
 	if err != nil {
 		log.Println(err)
 		return
@@ -115,7 +178,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			"success":   true,
 			"username":  user.Username,
 			"isAdmin":   user.IsAdmin,
-			"userImage": "",
+			"userImage": user.ImagePath,
 		})
 	} else {
 		bytes, err = json.Marshal(&map[string]interface{}{
