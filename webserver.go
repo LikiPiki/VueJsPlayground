@@ -7,18 +7,19 @@ import (
 	"log"
 	"net/http"
 
+	"encoding/base64"
+	"os"
+	"strings"
+
 	"github.com/gorilla/mux"
-  "strings"
-  "encoding/base64"
-  "os"
 )
 
 const (
-	PORT        = ":8000"
-	STATIC_PATH = "/static/"
-	STATIC_FOR_MEDIA ="/static"
-	DIR         = "./dist/static"
-	MEDIA_FOLDER = "/media/"
+	PORT             = ":8000"
+	STATIC_PATH      = "/static/"
+	STATIC_FOR_MEDIA = "/static"
+	DIR              = "./dist/static"
+	MEDIA_FOLDER     = "/media/"
 )
 
 func startWebRestApi() {
@@ -45,62 +46,62 @@ func startWebRestApi() {
 }
 
 func getUser(w http.ResponseWriter, r *http.Request) {
-  vars := mux.Vars(r)
-  username := vars["username"]
-  var user User
-  if db.Where("username = ?", username).First(&user).RecordNotFound() {
-    // error here
-  } else {
-    bytes, err := json.MarshalIndent(&user, "", "\t")
-    if err != nil {
-      // error here
-    }
-    w.Write(bytes)
-  }
+	vars := mux.Vars(r)
+	username := vars["username"]
+	var user User
+	if db.Where("username = ?", username).First(&user).RecordNotFound() {
+		returnErrorFromHandler(w)
+		return
+	} else {
+		bytes, err := json.MarshalIndent(&user, "", "\t")
+		if err != nil {
+			returnErrorFromHandler(w)
+			return
+		}
+		w.Write(bytes)
+	}
 }
 
 func loadProfileImage(w http.ResponseWriter, r *http.Request) {
-  //save image from query
-  type Body struct {
-    Username string `json:"username"`
-    ImageData string `json:"imageData"`
-    ImageName string `json:"imageName"`
-  }
-  var body Body
-  err := json.NewDecoder(r.Body).Decode(&body)
-  if err != nil {
-    // error here
-  }
-  fmt.Println("Username is ", body.Username)
-  content := strings.Split(body.ImageData, ",")
-  data, err := base64.StdEncoding.DecodeString(content[1])
-  if err != nil {
-    log.Println("Erorr decode base64 image")
-  }
-  if body.ImageData != "" && body.ImageName != "" {
-    f, err := os.Create(
-      fmt.Sprintf("%s%s%s", DIR, MEDIA_FOLDER,  body.ImageName),
-    )
-    if err != nil {
-      log.Println("error writing file")
-      // erorr here
-    }
-    f.Write(data)
-    f.Close()
-  }
-  var user User
-  if db.Where("username = ?", body.Username).First(&user).RecordNotFound() {
-    // error here
-  } else {
-    db.Model(&user).Update("imagePath", fmt.Sprintf("%s%s%s", STATIC_FOR_MEDIA, MEDIA_FOLDER,  body.ImageName))
-  }
-  // return something cool!!!
+	//save image from query
+	type Body struct {
+		Username  string `json:"username"`
+		ImageData string `json:"imageData"`
+		ImageName string `json:"imageName"`
+	}
+	var body Body
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		// error here
+	}
+	fmt.Println("Username is ", body.Username)
+	content := strings.Split(body.ImageData, ",")
+	data, err := base64.StdEncoding.DecodeString(content[1])
+	if err != nil {
+		log.Println("Erorr decode base64 image")
+	}
+	if body.ImageData != "" && body.ImageName != "" {
+		f, err := os.Create(
+			fmt.Sprintf("%s%s%s", DIR, MEDIA_FOLDER, body.ImageName),
+		)
+		if err != nil {
+			returnErrorFromHandler(w)
+			return
+		}
+		f.Close()
+		f.Write(data)
+	}
+	var user User
+	if db.Where("username = ?", body.Username).First(&user).RecordNotFound() {
+		// error here
+	} else {
+		db.Model(&user).Update("imagePath", fmt.Sprintf("%s%s%s", STATIC_FOR_MEDIA, MEDIA_FOLDER, body.ImageName))
+	}
+	// return something cool!!!
 }
 
 func getPosts(w http.ResponseWriter, r *http.Request) {
 	var posts, newPosts []Post
-	// var post Post
-
 	db.Find(&posts)
 
 	for _, el := range posts {
@@ -212,10 +213,8 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 			"success": true,
 		})
 	} else {
-		bytes, err = json.Marshal(&map[string]interface{}{
-			"success": false,
-		})
-
+		returnErrorFromHandler(w)
+		return
 	}
 	if err != nil {
 		log.Println("Error in marshal json", err)
@@ -229,4 +228,14 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error parse file index.html")
 	}
 	temp.ExecuteTemplate(w, "index.html", nil)
+}
+
+func returnErrorFromHandler(w http.ResponseWriter) {
+	bytes, err := json.Marshal(&map[string]interface{}{
+		"success": false,
+	})
+	if err != nil {
+		log.Println("Error parse error map", err)
+	}
+	w.Write(bytes)
 }

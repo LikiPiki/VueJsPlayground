@@ -7,7 +7,8 @@
 			<md-card v-for="post in allPosts" :key="post.ID" class="content">
 		        <md-card-header>
 		        <md-avatar class="avatar">
-		          <img src="https://pbs.twimg.com/profile_images/719228251168731137/61EfguCm.jpg" alt="Avatar">
+		          <img v-if="post.user.imagePath" :src="post.user.imagePath" alt="">
+		          <img v-else src="http://lightbox.vc/assets/admin/images/users/avatar-1.jpeg" alt="Avatar">
 		        </md-avatar>
 
 				<div class="info">

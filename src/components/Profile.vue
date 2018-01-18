@@ -2,23 +2,23 @@
 	<div>
 		<h1>Profile {{getUser.username}}</h1>
 		<md-avatar class="md-large">
-    <img v-if="getUser.userImage" :src="getUser.userImage" alt="People">
+	<img v-if="getUser.userImage" :src="getUser.userImage" alt="People">
 		<img v-else src="https://pbs.twimg.com/profile_images/719228251168731137/61EfguCm.jpg" alt="People">
 	  </md-avatar>
 		<br>
 		<br>Edit profile icon
-    <form class="login-form" enctype="multipart/form-data">
-      <md-field>
-        <label>Choose jpg/png file only!</label>
-        <md-file
-          @change="imageChanged"
-          v-model="imageForm.imageName"
-        />
-      </md-field>
-      <md-button class="md-primary" @click="changeProfileImage">
-        Change/set image
-      </md-button>
-    </form>
+	<form class="login-form" enctype="multipart/form-data">
+	  <md-field>
+		<label>Choose jpg/png file only!</label>
+		<md-file
+		  @change="imageChanged"
+		  v-model="imageForm.imageName"
+		/>
+	  </md-field>
+	  <md-button class="md-primary" @click="changeProfileImage">
+		Change/set image
+	  </md-button>
+	</form>
 	  <br>
 	  <form class="login-form md-layout-row md-gutter">
 		<md-card class="md-flex-50 md-flex-small-100">
@@ -56,10 +56,10 @@
 					content: '',
 					imagelink: '',
 				},
-        imageForm: {
+		imageForm: {
 				  imageData: null,
-          imageName: '',
-        }
+		  imageName: '',
+		}
 			}
 		},
 		computed: {
@@ -68,27 +68,27 @@
 			},
 		},
 		methods: {
-		  changeProfileImage() {
-		    if (this.imageForm.imageName && (this.imageForm.imageName.endsWith(".jpg") || (this.imageForm.imageName.endsWith(".png")))) {
-		      console.log("send", this.imageForm)
-          let data = {
-              ...this.$store.state.user,
-              ...this.imageForm
-          }
-          console.log(data)
-          this.$http.post('/load_profile_image', data).then(response => {
-          }, response => {
+			changeProfileImage() {
+				if (this.imageForm.imageName && (this.imageForm.imageName.endsWith(".jpg") || (this.imageForm.imageName.endsWith(".png")))) {
+					console.log("send", this.imageForm)
+					let data = {
+						...this.$store.state.user,
+						...this.imageForm
+					}
+					console.log(data)
+					this.$http.post('/load_profile_image', data).then(response => {
+					}, response => {
 
-          })
-        }
-      },
-      imageChanged(e) {
-		    let fileReader = new FileReader()
-        fileReader.readAsDataURL(e.target.files[0])
-        fileReader.onload = (e) => {
-		      this.imageForm.imageData = e.target.result
-        }
-      },
+					})
+				}
+			},
+			imageChanged(e) {
+				let fileReader = new FileReader()
+				fileReader.readAsDataURL(e.target.files[0])
+				fileReader.onload = (e) => {
+					this.imageForm.imageData = e.target.result
+				}
+			},
 			savePost: function() {
 				this.$store.dispatch('savePost', {
 					creator: this.$store.state.user.username,
