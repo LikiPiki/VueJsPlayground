@@ -1,13 +1,10 @@
 package main
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -52,34 +49,4 @@ func ReturnErrorFromHandler(w http.ResponseWriter) {
 		log.Println("Error parse error map", err)
 	}
 	w.Write(bytes)
-}
-
-// imageLoader
-type ImageLoad struct {
-	ImageData string `json:"imageData"`
-	ImageName string `json:"imageName"`
-}
-
-func (i ImageLoad) saveImage() (err error) {
-	content := strings.Split(i.ImageData, ",")
-	var data []byte
-
-	data, err = base64.StdEncoding.DecodeString(content[1])
-	if err != nil {
-		log.Println("Erorr decode base64 image", err)
-		return
-	}
-	if i.ImageData != "" && i.ImageName != "" {
-		var f *os.File
-		f, err = os.Create(
-			fmt.Sprintf("%s%s%s", DIR, MEDIA_FOLDER, i.ImageName),
-		)
-		if err != nil {
-			log.Println("Error", err)
-			return
-		}
-		f.Write(data)
-		f.Close()
-	}
-	return
 }

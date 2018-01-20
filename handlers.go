@@ -35,26 +35,30 @@ func loadProfileImage(w http.ResponseWriter, r *http.Request) {
 	}
 	var body Body
 	var err error
+
 	err = json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
 		log.Println("Error decode", err)
 		ReturnErrorFromHandler(w)
 		return
 	}
+
 	err = body.saveImage()
 	if err != nil {
 		log.Println("Error save image", err)
 		ReturnErrorFromHandler(w)
 		return
 	}
-	fmt.Println("Username is ", body.Username)
+
 	var user User
-	if db.Where("username = ?", body.Username).First(&user).RecordNotFound() {
-		log.Println("error find user")
-	} else {
-		db.Model(&user).Update("imagePath", fmt.Sprintf("%s%s%s", STATIC_FOR_MEDIA, MEDIA_FOLDER, body.ImageName))
+	if err := user.getUserByUsername(body.Username); err != nil {
+		log.Println(err)
+		ReturnErrorFromHandler(w)
+		return
 	}
-	// return something cool!!!
+	db.Model(&user).Update("imagePath", fmt.Sprintf("%s%s%s", STATIC_FOR_MEDIA, MEDIA_FOLDER, body.ImageName))
+
+	// write succes json to writter
 }
 
 func getPosts(w http.ResponseWriter, r *http.Request) {
