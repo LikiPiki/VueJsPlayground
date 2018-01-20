@@ -66,7 +66,7 @@ func (i ImageLoad) saveImage() (err error) {
 
 	data, err = base64.StdEncoding.DecodeString(content[1])
 	if err != nil {
-		log.Println("Erorr decode base64 image")
+		log.Println("Erorr decode base64 image", err)
 		return
 	}
 	if i.ImageData != "" && i.ImageName != "" {
@@ -75,10 +75,11 @@ func (i ImageLoad) saveImage() (err error) {
 			fmt.Sprintf("%s%s%s", DIR, MEDIA_FOLDER, i.ImageName),
 		)
 		if err != nil {
+			log.Println("Error", err)
 			return
 		}
-		f.Close()
 		f.Write(data)
+		f.Close()
 	}
 	return
 }

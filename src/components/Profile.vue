@@ -78,7 +78,7 @@
 					console.log(data)
 					this.$http.post('/load_profile_image', data).then(response => {
 					}, response => {
-
+						console.log("Recive", response)
 					})
 				}
 			},
