@@ -57,8 +57,8 @@
 					imagelink: '',
 				},
 		imageForm: {
-				  imageData: null,
-		  imageName: '',
+		    imageData: null,
+		    dimageName: '',
 		}
 			}
 		},
@@ -90,22 +90,20 @@
 				}
 			},
 			savePost: function() {
-				this.$store.dispatch('savePost', {
-					creator: this.$store.state.user.username,
-					image: this.form.imagelink,
-					body: this.form.content,
-					title: this.form.title
-				})
+
 				if (this.$store.state.user) {
+				  console.log("Yeap")
 					let data = {
 						...this.$store.state.user,
 						...this.form,
 					}
 					console.log('data is ', data)
 					this.$http.post('/add_post', data).then(response => {
-						console.log(response.body);
+						console.log("Success", response.body);
+						this.$store.dispatch('savePost', response.data)
+
 					}, response => {
-						console.log(response.body);
+						console.log("Error", response.body);
 					})
 				} else {
 					console.log("NOT");

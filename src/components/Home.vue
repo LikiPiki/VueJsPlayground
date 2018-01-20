@@ -68,7 +68,7 @@
 		display: block;
 		width: 600px;
 		margin: 0 auto;
-	}	
+	}
 	.content {
 		margin-bottom: 20px;
 	}

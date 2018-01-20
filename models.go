@@ -39,13 +39,18 @@ type Post struct {
 	User        User      `json:"user"`
 }
 
+func (p Post) getAllPosts() (posts []Post) {
+  // add return all posts here
+  return
+}
+
 // imageLoader
 type ImageLoad struct {
 	ImageData string `json:"imageData"`
 	ImageName string `json:"imageName"`
 }
 
-func (i ImageLoad) saveImage() (err error) {
+func (i ImageLoad) saveImage(username string) (err error) {
 	content := strings.Split(i.ImageData, ",")[1]
 	var data []byte
 
@@ -58,7 +63,7 @@ func (i ImageLoad) saveImage() (err error) {
 	if i.ImageData != "" && i.ImageName != "" {
 		var f *os.File
 		f, err = os.Create(
-			fmt.Sprintf("%s%s%s", DIR, MEDIA_FOLDER, i.ImageName),
+			fmt.Sprintf("%s%s%s-%s", DIR, MEDIA_FOLDER, username, i.ImageName),
 		)
 		if err != nil {
 			log.Println("Error", err)

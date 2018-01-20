@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	state: {
-		login: false,
+		login: true,
 		user: {
 			username: "",
 			isAdmin: false,
@@ -26,6 +26,9 @@ const store = new Vuex.Store({
 			state[type] = data
 		},
 		save(state, query) {
+		  console.log("From store")
+		  console.log(this.state.posts)
+      console.log(query)
 			this.state.posts.unshift(query)
 		},
 	},
@@ -34,9 +37,7 @@ const store = new Vuex.Store({
 			const url = '/get_posts'
 
 			Vue.http.get(url).then(response => {
-			console.log('Something here')
 			console.log(response.body)
-			console.log('Something here')
 			commit('set', {type: 'posts', data: response.body})
 			}, response => {
 				console.log('Error loading json VUEX');

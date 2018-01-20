@@ -14,9 +14,10 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	username := vars["username"]
 	var user User
-	if db.Where("username = ?", username).First(&user).RecordNotFound() {
-		ReturnErrorFromHandler(w)
-		return
+	err := user.getUserByUsername(username)
+	if err != nil {
+	  ReturnErrorFromHandler(w)
+	  return
 	} else {
 		bytes, err := json.MarshalIndent(&user, "", "\t")
 		if err != nil {
@@ -43,7 +44,7 @@ func loadProfileImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = body.saveImage()
+	err = body.saveImage(body.Username)
 	if err != nil {
 		log.Println("Error save image", err)
 		ReturnErrorFromHandler(w)
@@ -56,7 +57,7 @@ func loadProfileImage(w http.ResponseWriter, r *http.Request) {
 		ReturnErrorFromHandler(w)
 		return
 	}
-	db.Model(&user).Update("imagePath", fmt.Sprintf("%s%s%s", STATIC_FOR_MEDIA, MEDIA_FOLDER, body.ImageName))
+	db.Model(&user).Update("imagePath", fmt.Sprintf("%s%s%s-%s", STATIC_FOR_MEDIA, MEDIA_FOLDER, body.Username, body.ImageName))
 
 	// write succes json to writter
 }
@@ -90,36 +91,37 @@ func addNewPost(w http.ResponseWriter, r *http.Request) {
 
 	var data Body
 	err := json.NewDecoder(r.Body).Decode(&data)
+  var post Post
+  var user User
 
 	if err != nil {
 		log.Println(err)
 		return
 	} else {
-		var user User
 		if db.Where("username = ?", data.Username).First(&user).RecordNotFound() {
 			log.Println(err)
 			return
 		} else {
 			fmt.Println("HERE")
-
-			db.Create(&Post{
+			post = Post{
 				User:      user,
 				Title:     data.Title,
 				Content:   data.Content,
 				ImageLink: data.ImageLink,
-			})
+			}
+			db.Create(&post)
 		}
 
-		resp, err := json.Marshal(&map[string]interface{}{
-			"success": true,
-		})
+		fmt.Println("Result is ", post.ID)
+		fmt.Println("post is", post)
+
+		resp, err := json.Marshal(&post)
 
 		if err != nil {
 			log.Println(err)
 		}
 		w.Write(resp)
 	}
-	fmt.Println(data)
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
